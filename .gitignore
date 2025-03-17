@@ -1,0 +1,44 @@
+# Environments and secrets
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.hypothesis/
+.tox/
+
+# Generated audio files
+*.mp3
+
+# Sample files
+input.txt
+large_text_sample.txt
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Cursor specific
+.cursorrules 
