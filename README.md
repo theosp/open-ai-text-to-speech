@@ -1,16 +1,23 @@
 # Text-to-Speech Generator
 
-A simple Python application to convert text to speech using OpenAI's Text-to-Speech API.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+A powerful Python application that converts text to speech using OpenAI's Text-to-Speech API. Designed for handling texts of any size with automatic chunking and seamless audio stitching.
+
+> 📌 **Repository**: [github.com/theosp/open-ai-text-to-speech](https://github.com/theosp/open-ai-text-to-speech)
 
 ## Features
 
-- Convert text from files to speech
+- Convert text from files to speech with high-quality results
 - Multiple voice options (alloy, echo, fable, onyx, nova, shimmer)
-- Command-line interface with various options
-- Support for large files with automatic chunking and stitching
-- Cost estimation before processing
-- Comprehensive test suite with advanced testing techniques
-- Error handling for various failure scenarios
+- Robust command-line interface with intuitive options
+- Smart handling of large files with automatic chunking and stitching
+- Cost estimation before processing to avoid surprises
+- Comprehensive test suite with 78% code coverage
+- Advanced error handling with automatic retries
+- Works with both standard and high-definition TTS models
 
 ## Prerequisites
 
@@ -54,8 +61,8 @@ ffmpeg -version
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/text-to-speech.git
-cd text-to-speech
+git clone https://github.com/theosp/open-ai-text-to-speech.git
+cd open-ai-text-to-speech
 
 # Install dependencies
 pip install -r requirements.txt
