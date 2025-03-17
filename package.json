@@ -1,0 +1,19 @@
+{
+  "name": "text-to-speech-tests",
+  "version": "1.0.0",
+  "description": "Client-side tests for Text-to-Speech application",
+  "scripts": {
+    "test": "jest --config client-tests/jest.config.js",
+    "test:coverage": "jest --coverage"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.16.0",
+    "jest": "^27.5.1",
+    "jest-environment-jsdom": "^27.4.0",
+    "jsdom": "^26.0.0",
+    "puppeteer": "^19.11.1"
+  }
+}

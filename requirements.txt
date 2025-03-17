@@ -1,8 +1,13 @@
-openai>=1.0.0
+openai>=1.2.0
 python-dotenv>=1.0.0
 pytest>=7.0.0
 pytest-cov>=4.0.0
 hypothesis>=6.0.0
 freezegun>=1.2.0
 pydub>=0.25.1
-colorama>=0.4.6 
+colorama>=0.4.6
+Flask>=2.0.1
+Flask-WTF>=1.0.0
+WTForms>=3.0.0
+humanize>=4.0.0
+PyPDF2>=3.0.0 

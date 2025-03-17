@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Audio Generated - Text-to-Speech Generator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        {% if show_success %}
+        <h2 class="page-title text-center mb-4"><i class="bi bi-check-circle-fill text-success me-2"></i> Audio Generated Successfully</h2>
+        {% endif %}
+        
+        <div class="audio-player-container">
+            <h5 class="feature-title mb-3"><i class="bi bi-music-note-beamed me-1"></i> Audio Preview</h5>
+            <audio controls class="w-100">
+                <source src="{{ url_for('get_audio', filename=filename) }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">
+                <a href="{{ url_for('download_audio', filename=filename) }}" class="btn btn-generate">
+                    <i class="bi bi-download me-1"></i> Download Audio
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-plus-lg me-1"></i> Create New
+                </a>
+            </div>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-info-circle me-1"></i> Generation Details</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="fw-bold d-block">Voice</label>
+                            <span class="voice-badge"><i class="bi bi-person me-1"></i> {{ voice }}</span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="fw-bold d-block">Model</label>
+                            <span class="model-badge"><i class="bi bi-cpu me-1"></i> {{ model }}</span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="fw-bold">File Size</label>
+                            <p class="mb-0">{{ file_size_formatted }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="fw-bold">Characters Processed</label>
+                            <p class="mb-0">{{ text_length }}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="fw-bold">Chunks Used</label>
+                            <p class="mb-0">{{ num_chunks }}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="fw-bold">Processing Time</label>
+                            <p class="mb-0">{{ processing_time }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="fw-bold"><i class="bi bi-file-earmark me-1"></i> Source</label>
+                    <p class="mb-0">
+                        {% if source_type == "PDF" %}
+                            <span class="badge bg-danger"><i class="bi bi-file-pdf"></i> PDF</span>
+                            <span class="ms-2">{{ original_filename }}</span>
+                        {% else %}
+                            <span class="badge bg-primary"><i class="bi bi-textarea-t"></i> Direct Text Input</span>
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="fw-bold"><i class="bi bi-textarea-t me-1"></i> Input Text <span class="badge bg-info text-dark">{{ text|length }} characters</span></label>
+                    <div class="p-3 border rounded bg-light overflow-auto" style="max-height: 200px;">
+                        {% if text|length > HISTORY_TEXT_PREVIEW_LENGTH %}
+                            <p class="mb-0">
+                                {{ text[:HISTORY_TEXT_PREVIEW_LENGTH] }}
+                                <span class="text-danger">...</span>
+                                <a href="{{ url_for('download_text', filename=filename) }}" class="btn btn-sm btn-link text-primary p-0 align-baseline">
+                                    <i class="bi bi-download"></i> Download Full Text
+                                </a>
+                            </p>
+                        {% else %}
+                            <p class="mb-0">{{ text }}</p>
+                        {% endif %}
+                    </div>
+                    {% if text|length > HISTORY_TEXT_PREVIEW_LENGTH %}
+                    <div class="mt-2 d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Showing {{ HISTORY_TEXT_PREVIEW_LENGTH }} of {{ text|length }} total characters</small>
+                        <a href="{{ url_for('download_text', filename=filename) }}" class="btn btn-primary">
+                            <i class="bi bi-file-text me-1"></i> Download Full Text ({{ text|length }} characters)
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

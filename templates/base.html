@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Text-to-Speech Generator{% endblock %}</title>
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --slack-purple: #4A154B;
+            --slack-blue: #36C5F0;
+            --slack-green: #2EB67D;
+            --slack-yellow: #ECB22E;
+            --slack-red: #E01E5A;
+            --slack-bg: #F8F8FA;
+            --slack-text: #1D1C1D;
+            --slack-secondary: #616061;
+        }
+        
+        body {
+            background-color: var(--slack-bg);
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+            color: var(--slack-text);
+            font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+        }
+        
+        .navbar-dark {
+            background-color: var(--slack-purple) !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--slack-purple);
+            border-color: var(--slack-purple);
+        }
+        
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: #611f64;
+            border-color: #611f64;
+        }
+        
+        .btn-outline-primary {
+            color: var(--slack-purple);
+            border-color: var(--slack-purple);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--slack-purple);
+            border-color: var(--slack-purple);
+        }
+        
+        .card {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        }
+        
+        .card-header {
+            background-color: var(--slack-purple);
+            color: white;
+            border-top-left-radius: 8px !important;
+            border-top-right-radius: 8px !important;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--slack-purple);
+            box-shadow: 0 0 0 0.25rem rgba(74, 21, 75, 0.25);
+        }
+        
+        .footer {
+            margin-top: 3rem;
+            padding: 1.5rem 0;
+            color: var(--slack-secondary);
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .alert-success {
+            background-color: var(--slack-green);
+            color: white;
+            border-color: var(--slack-green);
+        }
+        
+        .alert-danger {
+            background-color: var(--slack-red);
+            color: white;
+            border-color: var(--slack-red);
+        }
+        
+        .alert-warning {
+            background-color: var(--slack-yellow);
+            color: var(--slack-text);
+            border-color: var(--slack-yellow);
+        }
+        
+        .alert-info {
+            background-color: var(--slack-blue);
+            color: white;
+            border-color: var(--slack-blue);
+        }
+        
+        .page-title {
+            color: var(--slack-purple);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .audio-player-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            margin-bottom: 2rem;
+        }
+        
+        .audio-player-container audio {
+            width: 100%;
+        }
+        
+        .history-item {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            transition: transform 0.2s;
+        }
+        
+        .history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .history-item .metadata {
+            color: var(--slack-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .voice-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background-color: rgba(74, 21, 75, 0.1);
+            color: var(--slack-purple);
+        }
+        
+        .model-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background-color: rgba(54, 197, 240, 0.1);
+            color: var(--slack-blue);
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="bi bi-soundwave"></i> Text-to-Speech Generator</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="bi bi-house"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/history"><i class="bi bi-clock-history"></i> History</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 pt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="bg-dark text-white py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <h5>Text-to-Speech Generator</h5>
+                    <p>
+                        An advanced tool to convert text to natural-sounding speech
+                        using cutting-edge AI technology.
+                    </p>
+                </div>
+                <div class="col-lg-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('index') }}" class="text-white-50">Home</a></li>
+                        <li><a href="{{ url_for('history') }}" class="text-white-50">History</a></li>
+                        <li><a href="https://github.com/theosp/open-ai-text-to-speech/" target="_blank" class="text-white-50">GitHub</a></li>
+                        <li><a href="https://justdo.com" target="_blank" class="text-white-50">JustDo.com (Sponsor)</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <p>&copy; <span id="current-year"></span> Text-to-Speech Generator</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main App JavaScript -->
+    <script src="/static/js/main.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html> 

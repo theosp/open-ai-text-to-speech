@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  text-to-speech:
+    build: .
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./output:/app/output
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SECRET_KEY=your-secret-key-for-dev-purposes-only
+    restart: unless-stopped 

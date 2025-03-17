@@ -8,14 +8,23 @@ A powerful Python application that converts text to speech using OpenAI's Text-t
 
 > 📌 **Repository**: [github.com/theosp/open-ai-text-to-speech](https://github.com/theosp/open-ai-text-to-speech)
 
+## Sponsored by JustDo
+
+This project's development was sponsored by [JustDo.com](https://justdo.com), a Source-Available enterprise-grade project management platform.
+
+> *Every business is unique, and no single project management tool can meet everyone's needs. JustDo's source-availability lets you turn complexity into your competitive edge.*
+
+Check out JustDo on GitHub: [github.com/justdoinc/justdo](https://github.com/justdoinc/justdo) - stars are highly appreciated 🙏
+
 ## Features
 
 - Convert text from files to speech with high-quality results
+- Direct PDF document support with automatic text extraction
 - Multiple voice options (alloy, echo, fable, onyx, nova, shimmer)
 - Robust command-line interface with intuitive options
 - Smart handling of large files with automatic chunking and stitching
 - Cost estimation before processing to avoid surprises
-- Comprehensive test suite with 78% code coverage
+- Comprehensive test suite with 100% client-side test coverage
 - Advanced error handling with automatic retries
 - Works with both standard and high-definition TTS models
 
@@ -154,61 +163,48 @@ The application calculates cost based on OpenAI's pricing:
 
 You'll see the estimated cost before processing, giving you a chance to cancel if needed.
 
-## Testing
-
-The project includes a comprehensive test suite with:
-
-- Unit tests
-- Integration tests
-- Property-based testing (with Hypothesis)
-- Error injection testing
-- Code coverage reporting
+## Development and Testing
 
 ### Running Tests
 
-Basic test execution:
+This project has extensive test coverage for both server-side and client-side code.
+
+#### Client-Side Tests
 
 ```bash
-# Run all tests
-pytest
+# Navigate to the project directory
+cd text-to-speech
 
-# Run with test discovery details
-pytest -v
+# Install npm dependencies if not already installed
+npm install
+
+# Run client-side tests
+npm test
 ```
 
-### Using the Test Runner
-
-The project includes a convenient test runner script:
+#### Server-Side Tests
 
 ```bash
-# Run all tests
-./run_tests.py
+# Run Python tests
+pytest tests/
 
 # Run tests with coverage report
-./run_tests.py --coverage
-
-# Generate HTML coverage report
-./run_tests.py --coverage --html
-
-# Run specific test files
-./run_tests.py tests/test_advanced.py
-
-# Show detailed error information
-./run_tests.py --detailed-errors
+pytest --cov=app --cov=generator --cov=utils
 ```
 
-### Code Coverage
+### Testing Documentation
 
-The project uses pytest-cov for code coverage analysis:
+For more detailed information about testing practices in this project, see:
 
-```bash
-# Generate coverage report
-pytest --cov=generator
+- [Testing Guide](docs/instructions/testing_guide.md)
+- [Client-Side Testing](docs/instructions/client_side_testing.md)
+- [Server-Side Testing](docs/instructions/server_side_testing.md)
 
-# Generate HTML coverage report
-pytest --cov=generator --cov-report=html
-# Then open htmlcov/index.html in your browser
-```
+These guides include best practices for:
+- Asynchronous testing
+- DOM manipulation testing
+- API mocking
+- Proper test structure and organization
 
 ## Error Handling
 
@@ -252,4 +248,119 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - OpenAI for their Text-to-Speech API
 - FFmpeg project for audio processing capabilities
-- Contributors to all the open source libraries used in this project 
+- Contributors to all the open source libraries used in this project
+
+## Web Interface
+
+In addition to the command-line tool, this project now includes a web interface built with Flask, making it easier to use the text-to-speech generation capabilities.
+
+### Features
+
+- User-friendly web interface for text input
+- Support for all available voices and models
+- Preview of estimated cost before processing
+- Storage of generation history
+- Audio playback, download, and management
+
+### Environment Setup
+
+The application requires an OpenAI API key to function. You can set this up in one of two ways:
+
+1. Copy the example environment file and edit it:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your OpenAI API key
+   ```
+
+2. Export the environment variable directly:
+   ```bash
+   export OPENAI_API_KEY=your-api-key-here
+   ```
+
+### How to Run the Web Interface
+
+#### Option 1: Using Docker (Recommended)
+
+The easiest way to run the application is using Docker, which eliminates any dependency issues:
+
+1. Make sure you have [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed.
+
+2. Set your OpenAI API key as an environment variable:
+   ```bash
+   export OPENAI_API_KEY=your-api-key-here
+   ```
+   
+   Or create a `.env` file in the project directory with the following content:
+   ```
+   OPENAI_API_KEY=your-api-key-here
+   ```
+
+3. Build and start the Docker container:
+   ```bash
+   # If using Docker Compose V2
+   docker compose up -d
+   
+   # If using Docker Compose V1
+   docker-compose up -d
+   ```
+
+4. Open your web browser and navigate to:
+   ```
+   http://localhost:5001/
+   ```
+
+5. To stop the container:
+   ```bash
+   # If using Docker Compose V2
+   docker compose down
+   
+   # If using Docker Compose V1
+   docker-compose down
+   ```
+
+> **Note:** The Docker setup has been tested and works correctly. The application will be available on port 5001, and all generated files will be stored in the `output` directory, which is mounted as a volume in the container.
+
+#### Option 2: Running Locally
+
+If you prefer to run the application locally:
+
+1. Make sure you have installed all the required dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+
+2. Set your OpenAI API key as an environment variable:
+   ```
+   export OPENAI_API_KEY=your-api-key-here
+   ```
+   
+   Or use a `.env` file in the project directory with the following content:
+   ```
+   OPENAI_API_KEY=your-api-key-here
+   ```
+
+3. Start the Flask application:
+   ```
+   python app.py
+   ```
+
+4. Open your web browser and navigate to:
+   ```
+   http://localhost:5001/
+   ```
+
+### Using the Web Interface
+
+1. Enter the text you want to convert to speech in the text area
+2. Select your preferred voice and model
+3. Click the "Preview Cost" button to see the estimated cost before proceeding
+4. Click "Generate Speech" to convert your text to speech
+5. When processing is complete, you'll be redirected to a results page where you can:
+   - Play the generated audio
+   - Download the MP3 file
+   - View processing details
+6. Visit the History page to access all your previously generated audio files
+
+### File Storage
+
+Generated audio files are stored in the `output` directory. The application maintains a history of all generations in a JSON file. 

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #4A154B;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #611f64;
+        }
+        .playing {
+            background-color: #2EB67D;
+        }
+        h1, h2 {
+            color: #4A154B;
+        }
+    </style>
+</head>
+<body>
+    <h1>Audio Test Page</h1>
+    <p>This page tests audio playback of the voice samples.</p>
+    
+    <h2>Direct Audio Elements</h2>
+    <p>These audio controls use the browser's built-in player:</p>
+    
+    <div>
+        <h3>Alloy</h3>
+        <audio controls src="/static/audio/samples/alloy.mp3"></audio>
+    </div>
+    
+    <div>
+        <h3>Echo</h3>
+        <audio controls src="/static/audio/samples/echo.mp3"></audio>
+    </div>
+    
+    <h2>JavaScript Audio Playback</h2>
+    <p>These buttons use JavaScript to create and play audio (just like our main app):</p>
+    
+    <div>
+        <button onclick="playVoice('alloy')" id="alloy-btn">Play Alloy</button>
+        <button onclick="playVoice('echo')" id="echo-btn">Play Echo</button>
+        <button onclick="playVoice('fable')" id="fable-btn">Play Fable</button>
+        <button onclick="playVoice('nova')" id="nova-btn">Play Nova</button>
+        <button onclick="playVoice('onyx')" id="onyx-btn">Play Onyx</button>
+        <button onclick="playVoice('shimmer')" id="shimmer-btn">Play Shimmer</button>
+    </div>
+    
+    <h2>Status</h2>
+    <div id="status">Ready to play audio</div>
+    
+    <script>
+        let currentAudio = null;
+        let currentButton = null;
+        
+        function playVoice(voice) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = `Attempting to play ${voice}...`;
+            
+            // Stop current audio if any
+            if (currentAudio) {
+                currentAudio.pause();
+                if (currentButton) {
+                    currentButton.classList.remove('playing');
+                }
+            }
+            
+            const button = document.getElementById(`${voice}-btn`);
+            
+            try {
+                // Create new audio element
+                const audio = new Audio(`/static/audio/samples/${voice}.mp3`);
+                currentAudio = audio;
+                currentButton = button;
+                
+                // Add event listeners
+                audio.addEventListener('playing', () => {
+                    statusEl.textContent = `Playing ${voice}...`;
+                    button.classList.add('playing');
+                });
+                
+                audio.addEventListener('ended', () => {
+                    statusEl.textContent = `Finished playing ${voice}`;
+                    button.classList.remove('playing');
+                    currentAudio = null;
+                    currentButton = null;
+                });
+                
+                audio.addEventListener('error', (e) => {
+                    statusEl.textContent = `Error playing ${voice}: ${e.message || 'Unknown error'}`;
+                    button.classList.remove('playing');
+                    console.error('Audio error:', e);
+                });
+                
+                // Start playback
+                audio.play().catch(error => {
+                    statusEl.textContent = `Error playing ${voice}: ${error.message}`;
+                    console.error('Play error:', error);
+                });
+            } catch (error) {
+                statusEl.textContent = `Exception playing ${voice}: ${error.message}`;
+                console.error('Exception:', error);
+            }
+        }
+    </script>
+</body>
+</html> 

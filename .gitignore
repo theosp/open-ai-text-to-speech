@@ -6,6 +6,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.env.local
+.env.development
+.env.test
+.env.production
 
 # Distribution / packaging
 dist/
@@ -25,9 +29,18 @@ htmlcov/
 .pytest_cache/
 .hypothesis/
 .tox/
+coverage/
+client-tests/coverage/
+.coverage.*
+nosetests.xml
+coverage.xml
+*.cover
 
-# Generated audio files
+# Generated files
 *.mp3
+output/
+# Keep output directory structure but not contents
+!output/.gitkeep
 
 # Sample files
 input.txt
@@ -42,3 +55,35 @@ large_text_sample.txt
 
 # Cursor specific
 .cursorrules 
+
+# Flask specific
+instance/
+.webassets-cache
+flask_session/
+*.session
+
+# JavaScript
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+.pnp.*
+.cache/
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+logs/
+temp/
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# System files
+Thumbs.db
+ehthumbs.db
+Desktop.ini 

@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+.github/
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+.venv
+ENV/
+env.bak/
+venv.bak/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.hypothesis/
+.tox/
+
+# Generated files
+*.mp3
+output/*
+!output/.gitkeep
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Cursor specific
+.cursorrules 
+
+# Documentation
+README.md
+LICENSE 

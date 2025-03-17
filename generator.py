@@ -218,9 +218,36 @@ def display_processing_info(text, model):
     
     return input(f"\n{Fore.GREEN}Do you want to proceed? (y/n): {Style.RESET_ALL}").lower().startswith('y')
 
-def generate_speech(client, input_text, speech_file_path, model='tts-1', voice='alloy'):
+def combine_audio_files(input_files, output_file):
+    """Combine multiple audio files into a single file."""
+    if not input_files:
+        return False
+    
+    try:
+        # If there's only one file, just rename/copy it
+        if len(input_files) == 1:
+            combined = AudioSegment.from_mp3(input_files[0])
+            combined.export(output_file, format="mp3")
+            return True
+        
+        # Otherwise, use pydub to combine audio files
+        combined = AudioSegment.empty()
+        for input_file in input_files:
+            audio_segment = AudioSegment.from_mp3(input_file)
+            combined += audio_segment
+        
+        combined.export(output_file, format="mp3")
+        return True
+    except Exception as e:
+        print(f"Error combining audio files: {str(e)}")
+        raise
+
+def generate_speech(input_text, speech_file_path, model='tts-1', voice='alloy', client=None):
     """Generate speech from text and save to file, handling large inputs by splitting and stitching."""
-    assert client is not None, "OpenAI client must be initialized"
+    if not client:
+        # Create client if not provided (for web interface integration)
+        client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
+    
     assert input_text, "Input text cannot be empty"
     assert speech_file_path, "Speech file path must be specified"
     assert model, "Model name must be specified"
@@ -307,7 +334,7 @@ def main(args=None):
         return False
     
     # Generate speech
-    return generate_speech(client, input_text, speech_file_path, args.model, args.voice)
+    return generate_speech(input_text, speech_file_path, args.model, args.voice)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generate speech from text file.')
