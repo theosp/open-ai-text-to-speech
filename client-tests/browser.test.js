@@ -54,11 +54,10 @@ describe('UI Tests', () => {
     // Clear the text area (in case there's default text)
     await page.$eval('#text-input', el => el.value = '');
     
-    // Click the preview button
-    await page.click('#preview-btn');
+    // The preview should be visible by default - no need to click a button
     
-    // Wait for the preview to be visible
-    await page.waitForSelector('#cost-preview[style*="display: block"]', { timeout: WAIT_TIMEOUT });
+    // Wait a moment for any updates to occur
+    await page.waitForTimeout(100);
     
     // Check the values in the preview
     const previewLength = await page.$eval('#preview-length', el => el.textContent);

@@ -106,22 +106,27 @@ describe('Main JS Functions', () => {
   });
   
   describe('setupCostPreview', () => {
-    test('should set up cost preview functionality', async () => {
-      const mockPreviewBtn = { addEventListener: jest.fn() };
-      const mockTextInput = { value: 'Test text', addEventListener: jest.fn() };
-      const mockModelSelect = { value: 'tts-1', addEventListener: jest.fn() };
+    test('should set up event listeners for automatic cost preview updates', () => {
+      // Setup test
+      document.getElementById = jest.fn()
+        .mockReturnValueOnce(mockTextInput)    // text-input
+        .mockReturnValueOnce(mockModelSelect)  // model-select
+        .mockReturnValueOnce(mockPdfFile)      // pdf-file
+        .mockReturnValueOnce(mockCostPreview); // cost-preview
       
-      document.getElementById
-        .mockReturnValueOnce(mockPreviewBtn)    // preview-btn
-        .mockReturnValueOnce(mockTextInput)     // text-input
-        .mockReturnValueOnce(mockModelSelect);  // model-select
-      
+      // Call function under test
       mainJS.setupCostPreview();
       
-      expect(document.getElementById).toHaveBeenCalledWith('preview-btn');
-      expect(mockPreviewBtn.addEventListener).toHaveBeenCalledWith('click', expect.any(Function));
-      expect(mockModelSelect.addEventListener).toHaveBeenCalledWith('change', expect.any(Function));
+      // Assert that it got the correct elements
+      expect(document.getElementById).toHaveBeenCalledWith('text-input');
+      expect(document.getElementById).toHaveBeenCalledWith('model-select');
+      expect(document.getElementById).toHaveBeenCalledWith('pdf-file');
+      expect(document.getElementById).toHaveBeenCalledWith('cost-preview');
+      
+      // Assert that it set up the event listeners
       expect(mockTextInput.addEventListener).toHaveBeenCalledWith('input', expect.any(Function));
+      expect(mockModelSelect.addEventListener).toHaveBeenCalledWith('change', expect.any(Function));
+      expect(mockPdfFile.addEventListener).toHaveBeenCalledWith('change', expect.any(Function));
     });
     
     test('should show zeros in preview if no text is entered', () => {

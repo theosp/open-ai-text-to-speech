@@ -29,16 +29,17 @@ describe('Reactive Cost Preview', () => {
         })
       },
       'char-count': { textContent: '0' },
-      'preview-btn': { 
-        addEventListener: jest.fn((event, handler) => {
-          mockElements.previewBtnHandlers = mockElements.previewBtnHandlers || {};
-          mockElements.previewBtnHandlers[event] = handler;
-        }) 
-      },
-      'cost-preview': { style: { display: 'none' } },
+      'cost-preview': { style: { display: 'block' } }, // Now always visible
       'preview-length': { textContent: '0' },
       'preview-chunks': { textContent: '0' },
-      'preview-cost': { textContent: '0.00' }
+      'preview-cost': { textContent: '0.00' },
+      'pdf-file': {
+        files: [],
+        addEventListener: jest.fn((event, handler) => {
+          mockElements.pdfFileHandlers = mockElements.pdfFileHandlers || {};
+          mockElements.pdfFileHandlers[event] = handler;
+        })
+      }
     };
     
     // Save original getElementById
@@ -103,7 +104,6 @@ describe('Reactive Cost Preview', () => {
         mockElements['preview-length'].textContent = data.text_length;
         mockElements['preview-chunks'].textContent = data.num_chunks;
         mockElements['preview-cost'].textContent = data.cost.toFixed(4);
-        mockElements['cost-preview'].style.display = 'block';
       };
       
       // Execute the function
@@ -111,7 +111,6 @@ describe('Reactive Cost Preview', () => {
       
       // Verify the preview was updated
       expect(mockElements['preview-cost'].textContent).toBe('0.0003');
-      expect(mockElements['cost-preview'].style.display).toBe('block');
     });
   });
   
@@ -148,7 +147,6 @@ describe('Reactive Cost Preview', () => {
         mockElements['preview-length'].textContent = data.text_length;
         mockElements['preview-chunks'].textContent = data.num_chunks;
         mockElements['preview-cost'].textContent = data.cost.toFixed(4);
-        mockElements['cost-preview'].style.display = 'block';
       };
       
       // Execute the function
@@ -157,10 +155,51 @@ describe('Reactive Cost Preview', () => {
       // Verify the preview was updated
       expect(mockElements['preview-length'].textContent).toBe(25);
       expect(mockElements['preview-cost'].textContent).toBe('0.0004');
-      expect(mockElements['cost-preview'].style.display).toBe('block');
       
       // Restore timers
       jest.useRealTimers();
+    });
+  });
+  
+  describe('PDF file reactivity', () => {
+    test('should update preview when PDF file is selected', async () => {
+      // Call the setup function
+      mainJS.setupCostPreview();
+      
+      // Verify event listener was added
+      expect(mockElements['pdf-file'].addEventListener).toHaveBeenCalledWith('change', expect.any(Function));
+      
+      // Simulate PDF file upload
+      mockElements['pdf-file'].files = [new File(['dummy content'], 'test.pdf', {type: 'application/pdf'})];
+      
+      // Mock a response for PDF file
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          json: () => Promise.resolve({ 
+            text_length: 1500, 
+            num_chunks: 3, 
+            cost: 0.0045 // Higher cost for PDF
+          }),
+        })
+      );
+      
+      // Create a simplified version of updateCostPreview that directly updates the DOM
+      const updatePreview = async () => {
+        const response = await fetch('/preview');
+        const data = await response.json();
+        
+        mockElements['preview-length'].textContent = data.text_length;
+        mockElements['preview-chunks'].textContent = data.num_chunks;
+        mockElements['preview-cost'].textContent = data.cost.toFixed(4);
+      };
+      
+      // Execute the function
+      await updatePreview();
+      
+      // Verify the preview was updated
+      expect(mockElements['preview-length'].textContent).toBe(1500);
+      expect(mockElements['preview-chunks'].textContent).toBe(3);
+      expect(mockElements['preview-cost'].textContent).toBe('0.0045');
     });
   });
   

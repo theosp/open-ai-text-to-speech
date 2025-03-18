@@ -36,15 +36,13 @@ function updateCostPreview() {
     const textInput = document.getElementById('text-input');
     const modelSelect = document.getElementById('model-select');
     const pdfFileInput = document.getElementById('pdf-file');
-    const costPreview = document.getElementById('cost-preview');
     const previewLength = document.getElementById('preview-length');
     const previewChunks = document.getElementById('preview-chunks');
     const previewCost = document.getElementById('preview-cost');
     
     console.log('updateCostPreview called');
     
-    if (!modelSelect || !costPreview || 
-        !previewLength || !previewChunks || !previewCost) {
+    if (!modelSelect || !previewLength || !previewChunks || !previewCost) {
         console.log('Missing required elements');
         return;
     }
@@ -61,9 +59,12 @@ function updateCostPreview() {
         console.log('PDF file size:', pdfFileInput.files[0].size);
     }
     
-    // If there's no text and no PDF file, exit early
+    // If there's no text and no PDF file, display zeros
     if (text.length === 0 && !hasPdf) {
-        console.log('No text and no PDF, exiting early');
+        console.log('No text and no PDF, showing zeros');
+        previewLength.textContent = '0';
+        previewChunks.textContent = '0';
+        previewCost.textContent = '0.0000';
         return;
     }
     
@@ -144,37 +145,29 @@ function updateCostPreview() {
     }
 }
 
-// Preview cost
+// Cost preview
 function setupCostPreview() {
-    const previewBtn = document.getElementById('preview-btn');
     const textInput = document.getElementById('text-input');
     const pdfFileInput = document.getElementById('pdf-file');
     const modelSelect = document.getElementById('model-select');
-    const costPreview = document.getElementById('cost-preview');
-    const previewLength = document.getElementById('preview-length');
-    const previewChunks = document.getElementById('preview-chunks');
-    const previewCost = document.getElementById('preview-cost');
     
-    if (previewBtn) {
-        previewBtn.addEventListener('click', function() {
-            // If preview is already showing, toggle it off
-            if (costPreview.style.display === 'block') {
-                costPreview.style.display = 'none';
-                return;
-            }
-            
-            const text = textInput ? textInput.value : '';
-            const hasPdf = pdfFileInput && pdfFileInput.files && pdfFileInput.files.length > 0;
-            
-            if (text.length === 0 && !hasPdf) {
-                // Instead of showing an alert, display the preview with zeros
-                previewLength.textContent = '0';
-                previewChunks.textContent = '0';
-                previewCost.textContent = '0.0000';
-                costPreview.style.display = 'block';
-                return;
-            }
-            
+    // Initial cost update
+    updateCostPreview();
+    
+    // Make preview reactive to text input changes (with debounce)
+    if (textInput) {
+        let debounceTimeout;
+        textInput.addEventListener('input', function() {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(function() {
+                updateCostPreview();
+            }, 500); // 500ms debounce
+        });
+    }
+    
+    // Make preview reactive to PDF file selection
+    if (pdfFileInput) {
+        pdfFileInput.addEventListener('change', function() {
             updateCostPreview();
         });
     }
@@ -182,63 +175,7 @@ function setupCostPreview() {
     // Make preview reactive to model changes
     if (modelSelect) {
         modelSelect.addEventListener('change', function() {
-            const hasPdf = pdfFileInput && pdfFileInput.files && pdfFileInput.files.length > 0;
-            const hasText = textInput && textInput.value.length > 0;
-            
-            if (hasText || hasPdf) {
-                updateCostPreview();
-            } else if (costPreview) {
-                // Also handle empty case on model change if preview is already visible
-                if (costPreview.style.display === 'block') {
-                    previewLength.textContent = '0';
-                    previewChunks.textContent = '0';
-                    previewCost.textContent = '0.0000';
-                }
-            }
-        });
-    }
-    
-    // Add a debounced text input handler for reactivity
-    if (textInput) {
-        let debounceTimeout;
-        textInput.addEventListener('input', function() {
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(() => {
-                if (this.value.length > 0) {
-                    updateCostPreview();
-                } else if (costPreview && costPreview.style.display === 'block') {
-                    // Handle case when user deletes all text
-                    const hasPdf = pdfFileInput && pdfFileInput.files && pdfFileInput.files.length > 0;
-                    if (!hasPdf) {
-                        previewLength.textContent = '0';
-                        previewChunks.textContent = '0';
-                        previewCost.textContent = '0.0000';
-                    }
-                }
-            }, 500); // 500ms debounce
-        });
-    }
-    
-    // Add PDF file input change handler
-    if (pdfFileInput) {
-        pdfFileInput.addEventListener('change', function() {
-            if (this.files && this.files.length > 0) {
-                updateCostPreview();
-            }
-        });
-    }
-    
-    // Add clear button handler for PDF
-    const clearFileBtn = document.getElementById('clear-file-btn');
-    if (clearFileBtn && pdfFileInput) {
-        clearFileBtn.addEventListener('click', function() {
-            pdfFileInput.value = '';
-            // If there's no text either and preview is showing, update with zeros
-            if ((!textInput || textInput.value.length === 0) && costPreview && costPreview.style.display === 'block') {
-                previewLength.textContent = '0';
-                previewChunks.textContent = '0';
-                previewCost.textContent = '0.0000';
-            }
+            updateCostPreview();
         });
     }
 }
